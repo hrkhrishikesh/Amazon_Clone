@@ -85,6 +85,10 @@ const Signin = () => {
   return (
     <div className="w-full">
       <div className="w-full bg-gray-100 pb-10">
+      {
+        SuccessMsg?(
+          <div>Success</div>
+        ):(
         <form className="w-[350px] mx-auto flex flex-col items-center">
           <Link to="/">
             <img className="w-32" src={darkLogo} alt="darkLogo" />
@@ -174,8 +178,8 @@ const Signin = () => {
               Create your Amazon account
             </button>
           </Link>
-        </form>
-
+        </form>)
+      }
       </div>
       <div className="w-full bg-gradient-to-t from-white via-white to-zinc-200 flex flex-col gap-4 justify-center items-center py-10">
         <div className="flex items-center gap-6">
