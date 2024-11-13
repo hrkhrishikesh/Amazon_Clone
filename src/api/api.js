@@ -7,5 +7,5 @@ export async function productsData() {
   const products = await axios.get(
     "https://api.jsonbin.io/v3/b/6733d76cad19ca34f8c921f8"
   );
-  return products.data.record;
+  return products.record;
 }
