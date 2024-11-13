@@ -7,5 +7,5 @@ export async function productsData() {
   const products = await axios.get(
     "https://jsonkeeper.com/b/3BI8"
   );
-  return products.record;
+  return products;
 }
