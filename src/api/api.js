@@ -5,7 +5,7 @@ import axios from "axios";
 //api = "https://api.jsonbin.io/v3/b/6733d76cad19ca34f8c921f8"
 export async function productsData() {
   const products = await axios.get(
-    "https://api.jsonbin.io/v3/b/6733d76cad19ca34f8c921f8"
+    "https://jsonkeeper.com/b/3BI8"
   );
   return products.record;
 }
