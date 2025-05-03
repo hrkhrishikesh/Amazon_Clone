@@ -12,6 +12,5 @@ import product from "./products.json";
 // }
 export async function productsData() {
   const response = await fetch("./products.json");
-  const products = await response.json();
   return products;
 }
