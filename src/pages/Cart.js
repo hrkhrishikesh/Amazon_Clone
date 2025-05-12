@@ -57,7 +57,9 @@ const Cart = () => {
                       <p className="xl:pr-10 text-sm">{item.description}</p>
                       <p className="text-base">
                         Unit Price:{" "}
-                        <span className="font-semibold">₹{((item.price)*100).toFixed(2)}</span>
+                        <span className="font-semibold">
+                          ₹{(item.price * 100).toFixed(2)}
+                        </span>
                       </p>
                       <div className="bg-[#F0F2F2] flex justify-center items-center gap-2 w-36 py-1 text-center drop-shadow-lg rounded-md">
                         <p className="text-base font-normal">Qty:</p>
@@ -91,7 +93,7 @@ const Cart = () => {
 
                     <div className="w-full md:w-24">
                       <p className="text-lg xl:w-24 font-titleFont font-semibold">
-                      ₹{(item.price*100 * item.quantity).toFixed(2)}
+                        ₹{(item.price * 100 * item.quantity).toFixed(2)}
                       </p>
                     </div>
                     {/* ====================== Right End here ============================= */}
@@ -117,7 +119,8 @@ const Cart = () => {
               </p>
               <div>
                 <p className="font-semibold px-6 py-1 flex items-center justify-between">
-                  Total: <span className="text-lg font-bold">₹{totalAmt*100}</span>
+                  Total:{" "}
+                  <span className="text-lg font-bold">₹{totalAmt * 100}</span>
                 </p>
               </div>
               <button className="w-full font-titleFont font-medium text-base bg-gradient-to-tr from-yellow-400 to-yellow-200 border hover:from-yellow-300 hover:to-yellow-400 border-yellow-500 hover:border-yellow-700 active:bg-gradient-to-bl active:from-yellow-400 active:to-yellow-500 duration-200 py-1.5 rounded-md mt-3">

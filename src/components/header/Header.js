@@ -14,7 +14,6 @@ import { getAuth, signOut } from "firebase/auth";
 import { userSignOut } from "../../redux/amazonSlice";
 
 const Header = () => {
-
   const auth = getAuth();
   const dispatch = useDispatch();
 
@@ -23,6 +22,7 @@ const Header = () => {
   console.log(userInfo);
   const ref = useRef();
   const [showAll, setShowAll] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     document.body.addEventListener("click", (e) => {
@@ -32,23 +32,20 @@ const Header = () => {
     });
   }, [ref, showAll]);
 
-  const handleLogout = () =>{
+  const handleLogout = () => {
     signOut(auth)
-    .then(() => {
-      dispatch(userSignOut());
-      // Sign-out successful.
-
-    })
-    .catch((error) => {
-      // An error happened.
-    });
-  }
+      .then(() => {
+        dispatch(userSignOut());
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
 
   return (
     <div className="sticky top-0 z-50">
-
       <div className="w-full bg-amazon_blue text-white px-4 py-3 flex md:justify-between items-center gap-2 md:gap-4 lgl:gap-2 xl:gap-4">
-
         <Link to="/">
           <div className="headerHover">
             <img className="w-24 mt-2" src={logo} alt="logoImage" />
@@ -60,7 +57,7 @@ const Header = () => {
           <p className="flex flex-col text-xs text-lightText font-light">
             Deliver to{" "}
             <span className="text-sm font-semibold -mt-1 text-whiteText">
-              DHANBAD
+              Jamshedpur
             </span>
           </p>
         </div>
@@ -102,33 +99,55 @@ const Header = () => {
           </span>
         </div>
 
-        <Link to="/signin">
-          <div className="flex flex-col items-start justify-center headerHover">
-                  
-            {userInfo?(
-              <p>
-              {" "}
-              <p className="text-sm text-gray-100 font-medium">
-              {userInfo.userName}
+        <div className="relative">
+          <div
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="flex flex-col items-start justify-center headerHover cursor-pointer"
+          >
+            {userInfo ? (
+              <div>
+                <p className="text-sm text-gray-100 font-medium">
+                  {userInfo.userName}
                 </p>
-                </p>
-              ) : (
                 <p className="text-xs text-lightText font-light">
-                Hello, sign in
+                  Account & Lists
                 </p>
-              )
-            }
-
-              
-           
-            <p className="hidden md:inline-flex text-sm font-semibold -mt-1 text-whiteText">
-              Accounts & Lists{" "}
-              <span>
-                <ArrowDropDownOutlinedIcon />
-              </span>
-            </p>
+              </div>
+            ) : (
+              <Link to="/signin">
+                <div>
+                  <p className="text-xs text-lightText font-light">
+                    Hello, sign in
+                  </p>
+                  <p className="text-sm text-gray-100 font-medium">
+                    Account & Lists
+                  </p>
+                </div>
+              </Link>
+            )}
           </div>
-        </Link>
+
+          {showDropdown && userInfo && (
+            <div className="absolute top-full left-0 w-56 bg-white border border-gray-200 shadow-lg rounded-md py-2 z-50">
+              <div className="px-4 py-2 border-b border-gray-200">
+                <p className="font-medium text-gray-900">{userInfo.userName}</p>
+                <p className="text-sm text-gray-600">{userInfo.email}</p>
+              </div>
+              <div className="py-2">
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setShowDropdown(false);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <LogoutIcon className="mr-2" />
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="hidden mdl:flex flex-col items-start justify-center headerHover">
           <p className="text-xs text-lightText font-light">Returns</p>
@@ -146,18 +165,6 @@ const Header = () => {
             </span>
           </div>
         </Link>
-        {userInfo && (
-          <div
-            onClick = {handleLogout}
-            className="flex flex-col justify-center items-center headerHover relative"
-          >
-            <LogoutIcon />
-            <p className="hidden mdl:inline-flex text-xs font-semibold text-whiteText">
-              Log out
-            </p>
-          </div>
-        )}
-
       </div>
       <HeaderBottom />
     </div>

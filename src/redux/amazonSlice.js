@@ -26,10 +26,15 @@ export const amazonSlice = createSlice({
     },
     decreaseQuantity: (state, action) => {
       const item = state.products.find((item) => item.id === action.payload);
-      if (item.quantity === 1) {
-        item.quantity = 1;
-      } else {
-        item.quantity--;
+      if (item) {
+        if (item.quantity <= 1) {
+          // Remove item when quantity is 1 or less
+          state.products = state.products.filter(
+            (item) => item.id !== action.payload
+          );
+        } else {
+          item.quantity--;
+        }
       }
     },
     // Delete item from cart
@@ -43,18 +48,15 @@ export const amazonSlice = createSlice({
       state.products = [];
     },
 
-
     //firebase stuff
 
-    setUserInfo:(state,action) => {
+    setUserInfo: (state, action) => {
       state.userInfo = action.payload;
     },
 
-    userSignOut:(state) =>{
-      state.userInfo=null;
-    }
-
-
+    userSignOut: (state) => {
+      state.userInfo = null;
+    },
   },
 });
 
@@ -65,7 +67,6 @@ export const {
   increaseQuantity,
   decreaseQuantity,
   setUserInfo,
-  userSignOut
-
+  userSignOut,
 } = amazonSlice.actions;
 export default amazonSlice.reducer;

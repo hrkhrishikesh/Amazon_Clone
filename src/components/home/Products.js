@@ -5,13 +5,20 @@ import ApiIcon from "@mui/icons-material/Api";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/amazonSlice";
 
 const Products = () => {
   const data = useLoaderData();
   const productsData = data.data;
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.amazonReducer.products);
+
+  const getItemQuantity = (itemId) => {
+    const cartItem = cartItems.find((item) => item.id === itemId);
+    return cartItem ? cartItem.quantity : 0;
+  };
+
   return (
     <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10 xl:gap-4 px-4">
       {productsData.map((item) => (
@@ -29,7 +36,6 @@ const Products = () => {
               src={item.image}
               alt="ProductImg"
             />
-
           </div>
           {/* ========== Product Image End here ================ */}
           {/* ========== Product Info Start here =============== */}
@@ -39,7 +45,7 @@ const Products = () => {
                 {item.title.substring(0, 20)}
               </h2>
               <p className="text-sm text-gray-600 font-semibold">
-                ₹{(item.price*100).toFixed(2)}
+                ₹{item.price.toFixed(2)}
               </p>
             </div>
             <div>
@@ -48,27 +54,36 @@ const Products = () => {
                 <StarIcon />
                 <StarIcon />
                 <StarIcon />
-                <StarIcon />  
+                <StarIcon />
               </div>
             </div>
-            <button
-              onClick={() =>
-                dispatch(
-                  addToCart({
-                    id: item.id,
-                    title: item.title,
-                    description: item.description,
-                    price: item.price,
-                    category: item.category,
-                    image: item.image,
-                    quantity: 1,
-                  })
-                )
-              }
-              className="w-full py-1.5 rounded-md mt-3 font-titleFont font-medium text-base bg-gradient-to-tr from-yellow-400 to-yellow-200 border border-yellow-500 hover:border-yellow-700 hover:from-yellow-300 to hover:to-yellow-400 active:bg-gradient-to-bl active:from-yellow-400 active:to-yellow-500 duration-200"
-            >
-              Add to Cart
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() =>
+                  dispatch(
+                    addToCart({
+                      id: item.id,
+                      title: item.title,
+                      description: item.description,
+                      price: item.price,
+                      category: item.category,
+                      image: item.image,
+                      quantity: 1,
+                    })
+                  )
+                }
+                className="w-full py-1.5 rounded-md mt-3 font-titleFont font-medium text-base bg-gradient-to-tr from-yellow-400 to-yellow-200 border border-yellow-500 hover:border-yellow-700 hover:from-yellow-300 to hover:to-yellow-400 active:bg-gradient-to-bl active:from-yellow-400 active:to-yellow-500 duration-200"
+              >
+                Add to Cart
+              </button>
+              {getItemQuantity(item.id) > 0 && (
+                <div className="mt-3 px-3 py-1.5 bg-gray-100 rounded-md border border-gray-300">
+                  <p className="text-sm font-medium">
+                    {getItemQuantity(item.id)}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ))}

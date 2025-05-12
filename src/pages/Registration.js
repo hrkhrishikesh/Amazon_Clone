@@ -2,20 +2,25 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { darkLogo } from "../assets/index";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { RotatingLines } from "react-loader-spinner";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { setUserInfo } from "../redux/amazonSlice";
 
 const Registration = () => {
-
+  const dispatch = useDispatch();
   const auth = getAuth();
   const navigate = useNavigate();
   const [clientName, setClientName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [cPassword, setCPassword] = useState("");
-
-
 
   // Error Message start
   const [errClientName, setErrClientName] = useState("");
@@ -26,7 +31,6 @@ const Registration = () => {
 
   const [Loading, setLoading] = useState(false);
   const [SuccessMsg, setSuccessMsg] = useState("");
-
 
   // Handle funtion start
   const handleName = (e) => {
@@ -46,19 +50,12 @@ const Registration = () => {
     setErrCPassword("");
   };
 
-
-
-
   // Email validation start
   const emailValidation = (email) => {
     return String(email)
       .toLowerCase()
       .match(/^\w+([.-]?\w+)*@\w+([-]?\w+)*(\.\w{2,3})+$/);
   };
-
-
-
-
 
   // Submit button start
   const handleRegistration = (e) => {
@@ -98,37 +95,47 @@ const Registration = () => {
       cPassword &&
       cPassword === password
     ) {
-      // =========== Firebase Registration End here ===============
       setLoading(true);
-      console.log(clientName,email,password);
-
       createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-
-        updateProfile(auth.currentUser, {
-          displayName : clientName,
-          photoURL : ""
+        .then((userCredential) => {
+          updateProfile(auth.currentUser, {
+            displayName: clientName,
+            photoURL: "",
+          }).then(() => {
+            // After profile update, sign in the user
+            signInWithEmailAndPassword(auth, email, password)
+              .then((userCredential) => {
+                const user = userCredential.user;
+                dispatch(
+                  setUserInfo({
+                    _id: user.uid,
+                    userName: user.displayName,
+                    email: user.email,
+                    image: user.photoURL,
+                  })
+                );
+                setLoading(false);
+                setSuccessMsg("Account Created Successfully!");
+                setTimeout(() => {
+                  navigate("/");
+                }, 2000);
+              })
+              .catch((error) => {
+                setLoading(false);
+                setfirebaseError(
+                  "Auto-login failed. Please try logging in manually."
+                );
+              });
+          });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          if (errorCode.includes("auth/email-already-in-use")) {
+            setfirebaseError("Email already in use");
+          }
+          setLoading(false);
         });
-        // Signed up 
-        const user = userCredential.user;
-        console.log(user);
-        setLoading(false);
-        setSuccessMsg("Account Created Successfully :)");
-        setTimeout(() =>{
-          navigate("/signin")
-        }, 3000);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorMessage);
 
-        if(errorCode.includes("auth/email-already-in-use")){
-          setfirebaseError("Email already in use");
-        }
-
-      });
-      
       setClientName("");
       setEmail("");
       setPassword("");
@@ -175,15 +182,14 @@ const Registration = () => {
                   type="email"
                   className="w-full lowercase py-1 border border-zinc-400 px-2 text-base rounded-sm outline-none focus-within:border-[#e77600] focus-within:shadow-amazonInput duration-100"
                 />
-                {firebaseError && (
+                {(errEmail || firebaseError) && (
                   <p className="text-red-600 text-xs font-semibold tracking-wide flex items-center gap-2 -mt-1.5">
                     <span className="italic font-titleFont font-extrabold text-base">
                       !
                     </span>
-                    {firebaseError}
+                    {errEmail || firebaseError}
                   </p>
                 )}
-                
               </div>
               <div className="flex flex-col gap-2">
                 <p className="text-sm font-medium">Password</p>
@@ -228,26 +234,22 @@ const Registration = () => {
               >
                 Continue
               </button>
-              {
-                Loading && (
-                  <div className="flex justify-center">
-                    <RotatingLines
+              {Loading && (
+                <div className="flex justify-center">
+                  <RotatingLines
                     strokeColor="grey"
                     strokeWidth="5"
                     animationDuration="0.75"
                     width="96"
                     visible={true}
-                    />
-                  </div>
-                )
-              }
-              {
-                SuccessMsg && (
-                  <div>
-                    <motion.p>{SuccessMsg}</motion.p>
-                  </div>
-                )
-              }
+                  />
+                </div>
+              )}
+              {SuccessMsg && (
+                <div>
+                  <motion.p>{SuccessMsg}</motion.p>
+                </div>
+              )}
             </div>
             <p className="text-xs text-black leading-4 mt-4">
               By Continuing, you agree to Amazon's{" "}
@@ -266,7 +268,6 @@ const Registration = () => {
                   </span>
                 </Link>
               </p>
-            
             </div>
           </div>
         </form>
